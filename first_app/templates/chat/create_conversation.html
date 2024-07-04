@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Redirect to Conversation</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0; /* Light grey background */
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh; /* Full viewport height */
+        }
+        .container {
+            width: 500px; /* Adjusted width for form container */
+            background-color: #ffffff; /* White background */
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            position: relative; /* Ensure relative positioning */
+        }
+        h2 {
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 28px; /* Larger font size */
+        }
+        p {
+            text-align: center;
+            font-size: 24px; /* Larger font size for welcome message */
+            margin-bottom: 20px;
+        }
+        .username {
+            font-size: 28px; /* Larger font size for username */
+            color: #007bff; /* Blue color for username */
+            font-weight: bold; /* Bold font weight */
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+        label {
+            margin-bottom: 20px;
+            font-weight: bold;
+            font-size: 20px; /* Larger font size */
+        }
+        input[type="radio"], input[type="text"], button {
+            padding: 15px;
+            margin-bottom: 20px;
+            border: 2px solid #ccc; /* Increased border width */
+            border-radius: 10px; /* Rounded corners */
+            box-sizing: border-box;
+            font-size: 18px; /* Larger font size */
+        }
+        input[type="text"] {
+            padding-left: 10px;
+        }
+        .conversation-list {
+            margin-top: 20px;
+            padding-left: 20px;
+            font-size: 18px; /* Larger font size */
+        }
+        .conversation-list li {
+            margin-bottom: 15px;
+            list-style: none; /* Remove default list styling */
+        }
+        .conversation-link {
+            font-size: 20px; /* Larger font size for conversation links */
+        }
+        .logout-button {
+            position: absolute;
+            top: 20px; /* Adjust top position */
+            right: 20px; /* Adjust right position */
+        }
+        .logout-button a {
+            padding: 10px 20px;
+            background-color: #cc0000; /* Red background color */
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-size: 18px; /* Larger font size */
+            font-weight: bold;
+            transition: background-color 0.3s ease; /* Smooth hover transition */
+        }
+        .logout-button a:hover {
+            background-color: #a30000; /* Darker red on hover */
+        }
+        .error-message {
+            color: #cc0000; /* Red color for error message */
+            font-size: 16px; /* Font size for error message */
+            margin-bottom: 10px; /* Bottom margin for spacing */
+            text-align: center; /* Center align error message */
+        }
+        button {
+            background-color: #007bff; /* Blue button */
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 20px; /* Larger font size */
+            font-weight: bold;
+            transition: background-color 0.3s ease; /* Smooth hover transition */
+        }
+        button:hover {
+            background-color: #0056b3; /* Darker blue on hover */
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logout-button">
+            <a href="{% url 'logout_view' %}">Logout</a>
+        </div>
+
+        <h2>Welcome, <span class="username">{{ request.user.username }}</span>!</h2> <!-- Display dynamic username -->
+        <p>Choose an Option</p>
+
+        {% if error_message %}
+            <div class="error-message">{{ error_message }}</div>
+        {% endif %}
+
+        <form method="post">
+            {% csrf_token %}
+            <label for="new">
+                <input type="radio" id="new" name="option" value="new" required>
+                Create a New Conversation
+            </label>
+            <br>
+            <label for="join">
+                <input type="radio" id="join" name="option" value="join" required>
+                Join an Existing Conversation by ID:
+            </label>
+            <br>
+            <input type="text" id="conversation_id" name="conversation_id" placeholder="Enter Conversation ID">
+            <br>
+            <h3>Your Conversations:</h3>
+            {% if user_conversations %}
+                <ul class="conversation-list">
+                    {% for conversation in user_conversations %}
+                        <li class="conversation-link">
+                            Conversation {{ conversation.id }}
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p>No conversations found.</p>
+            {% endif %}
+            <button type="submit">Go</button>
+        </form>
+    </div>
+</body>
+</html>

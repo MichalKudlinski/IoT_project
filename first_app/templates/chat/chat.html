@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat Number {{ conversation.id }}</title>
+    <style>
+        /* Your existing styles */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0; /* Light grey background color */
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .chat-container {
+            width: 90%; /* Adjusted width */
+            max-width: 1200px; /* Increased maximum width for larger chat window */
+            height: 70vh; /* Adjusted height */
+            background-color: #ffffff; /* White background for chat container */
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin-bottom: 20px;
+            overflow-y: auto; /* Enable vertical scroll if content exceeds height */
+            position: relative; /* Ensure positioning context */
+        }
+        .chat-header {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .message {
+            margin-bottom: 10px;
+            padding: 20px; /* Increased padding for larger message area */
+            border-radius: 10px; /* Rounded corners for messages */
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .message .sender {
+            font-weight: bold;
+            margin-right: 10px;
+        }
+        .message .content {
+            font-size: 18px; /* Increased font size for message content */
+            line-height: 1.6; /* Increased line height for better readability */
+        }
+        .message .timestamp {
+            font-size: 14px; /* Font size for timestamp */
+            color: #888;
+        }
+        .message.sent {
+            background-color: #d9edf7; /* Light blue for messages sent by current user */
+        }
+        .message.received {
+            background-color: #f0f0f0; /* Light grey for messages received from other users */
+        }
+        .message-form {
+            margin-top: 20px;
+            display: flex;
+            align-items: center;
+        }
+        .message-form .user-name {
+            font-weight: bold;
+            margin-right: 10px;
+        }
+        .message-form input[type="text"] {
+            flex: 1;
+            padding: 14px; /* Increased padding for input field */
+            border: 1px solid #ccc;
+            border-radius: 8px; /* Rounded corners for input field */
+            font-size: 18px; /* Increased font size for input field */
+            margin-right: 10px;
+            height: 50px; /* Adjusted height for input field */
+        }
+        .message-form button {
+            padding: 14px 24px; /* Increased padding for button */
+            border: none;
+            border-radius: 8px; /* Rounded corners for button */
+            background-color: #3498db; /* Blue background color */
+            color: white;
+            font-size: 18px; /* Increased font size for button */
+            cursor: pointer;
+        }
+        .back-button {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+        }
+        .back-button a {
+            padding: 10px 20px;
+            background-color: #007bff; /* Blue background color */
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+        }
+        .back-button a:hover {
+            background-color: #0056b3; /* Darker blue on hover */
+        }
+        .logout-button {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+        }
+        .logout-button a {
+            padding: 10px 20px;
+            background-color: #cc0000; /* Red background color */
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+        }
+        .logout-button a:hover {
+            background-color: #a30000; /* Darker red on hover */
+        }
+    </style>
+</head>
+<body>
+    <div class="chat-container">
+        <!-- Back to Conversations button -->
+        <div class="back-button">
+            <a href="{% url 'conversation_redirect' %}">Back to Conversations</a>
+        </div>
+
+        <!-- Logout button -->
+        <div class="logout-button">
+            <a href="{% url 'logout' %}">Logout</a>
+        </div>
+
+        <h1 class="chat-header">Chat Number {{ conversation.id }}</h1>
+
+        <div id="messages">
+            {% for message in messages %}
+                <div class="message {% if message.sender == request.user %}sent{% else %}received{% endif %}">
+                    <span class="sender">{{ message.sender.username }}</span>:
+                    <span class="content">{{ message.content }}</span>
+                    <span class="timestamp">- {{ message.timestamp }}</span>
+                </div>
+            {% endfor %}
+        </div>
+
+        <form class="message-form" method="POST" action="{% url 'chat_view' conversation.id %}">
+            {% csrf_token %}
+            <span class="user-name">{{ request.user.username }}</span>
+            <input type="text" name="content" placeholder="Type your message..." required>
+            <button type="submit">Send</button>
+        </form>
+    </div>
+</body>
+</html>
